@@ -1,0 +1,128 @@
+<html>
+<head>
+    <!-- *************************  Load Hosted Prebid  ********************************* -->
+    <script type="text/javascript" src="https://secure-assets.rubiconproject.com/utils/prebid-test/10306-kargo.js"></script>
+    <!-- <script type="text/javascript" src="/prebid-library/10306-test.js"></script> -->
+    <script>
+        // load gpt
+        var gads = document.createElement('script');
+        gads.async = true;
+        gads.type = 'text/javascript';
+        var useSSL = 'https:' === document.location.protocol;
+        gads.src = (useSSL ? 'https:' : 'http:') + '//www.googletagservices.com/tag/js/gpt.js';
+        var node = document.getElementsByTagName('script')[0];
+        node.parentNode.insertBefore(gads, node);
+    </script>
+
+    <!-- *************************  Initialize Prebid (PBJS)  ********************************* -->
+    <script>
+        var pbjs = pbjs || {};
+        pbjs.que = pbjs.que || [];
+    </script>
+
+    <!-- *******************  Initialize GPT Slots and request bids  ************************** -->
+    <script>
+        // setup gpt
+        var googletag = googletag || {};
+        googletag.cmd = googletag.cmd || [];
+        var headerBiddingSlots = [];
+        var nonHeaderBiddingSlots = [];
+
+        googletag.cmd.push(function() {
+            headerBiddingSlots.push(googletag.defineSlot('/4442842/Business-Insider/Desktop/Finance/something', [320,50], 'id="gpt-post-politics-mobile_sticky_lower-5bed708bba48b7.95308530"').addService(googletag.pubads()));
+            headerBiddingSlots.push(googletag.defineSlot('/4442842/Business-Insider/Mobile-Web/something', [300,250], 'div-pch-gpt-placement-box2').addService(googletag.pubads()));
+            // initialize
+            googletag.pubads().enableSingleRequest();
+            googletag.pubads().enableAsyncRendering();
+            googletag.pubads().disableInitialLoad();
+            googletag.enableServices();
+
+            // go ahead and call for ads for slots not waiting for header bidding
+            googletag.pubads().refresh(nonHeaderBiddingSlots);
+            pbjs.que.push(function() {
+                pbjs.requestBids({
+                    timeout: 6000
+                });
+            });
+
+var divAtts = {}; // store div attributes so we only have to parse the div once
+function mapFunction(arguments) {
+    try {
+        if (!arguments.adUnitPattern.custParam) {
+            return true;
+        } else {
+            var divId = arguments.gptSlot.getSlotElementId();
+            var divAtt;
+            if (divAtts.hasOwnProperty(divId)) {
+                divAtt = divAtts[divId];
+            } else {
+                divAtt = divAtts[divId] = document.getElementById(divId).getAttribute('data-prebid');
+            }
+            // check if div attrbute matches adUnit custParam
+            if (divAtt === arguments.adUnitPattern.custParam) {
+                return true
+            } else {
+                return false
+            }
+        }
+    } catch(e) {
+        console.log("Prebid-RP: custom mapping function error:", e);
+    }
+    // default to true
+    return true;
+}
+pbjs.que.push(function () {
+    pbjs.setConfig({ bidderTimeout: 1000 }); //DO NOT SEND THIS TO A PUBLISHER
+    pbjs.rp.setCustomMappingFunction(mapFunction)
+});
+// Request the bids
+pbjs.rp.requestBids({
+    callback: sendAdServerRequest,
+    gptSlotObjects: headerBiddingSlots,
+});
+        });
+    </script>
+
+    <script>
+        // var customMappingFunction;
+        // the callback function
+        // will be called twice:
+        //	once by Prebid when the auction's done
+        //	once by the failsafe timeout
+        // so a boolean is used to make sure ads are refreshed only once
+        pbjs.adserverRequestSent = false;
+        var sendAdServerRequest = function(headerBiddingSlots) {
+            googletag.cmd.push(function(headerBiddingSlots) {
+                // don't run again if already ran
+                if (pbjs.adserverRequestSent) {
+                    return;
+                }
+                pbjs.adserverRequestSent = true;
+                googletag.pubads().refresh(headerBiddingSlots);
+            });
+        };
+        // this timeout is a failsafe
+        // the ad ops team can set lower thresholds that will be respected by Prebid
+        // but the web-dev team can define the worst case here
+    	setTimeout(function() {
+            sendAdServerRequest(headerBiddingSlots);
+        }, 1000);
+    </script>
+</head>
+<body>
+    <h1>Rubicon Hosted Prebid Display Demo Page</h1>
+    <h2>Business Insider</h2>
+    <h2>div 1 - includes header bidding</h2>
+        <div id='id="gpt-post-politics-mobile_sticky_lower-5bed708bba48b7.95308530"' style="position: relative; top: 1;" data-prebid="kargoAdhesive">
+            <script>
+                googletag.cmd.push(function() { googletag.display('id="gpt-post-politics-mobile_sticky_lower-5bed708bba48b7.95308530"'); });
+            </script>
+        </div>
+    <h2>div 2 - includes header bidding</h2>
+        <div id='div-pch-gpt-placement-box2' style="position: relative; top: 1;" >
+            <script>
+                googletag.cmd.push(function() { googletag.display('div-pch-gpt-placement-box2'); });
+            </script>
+        </div>
+    </body>
+</html>

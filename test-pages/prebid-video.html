@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Prebid.js (Client Side) Video Smoke Test</title>
+
+    <!-- videojs -->
+    <!-- use recent version of videojs to ensure proper functioning with the iOS devices -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/6.4.0/video-js.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/video.js/6.4.0/video.js"></script>
+
+    <!-- videojs-vast-vpaid -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/videojs-vast-vpaid/2.0.2/videojs.vast.vpaid.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-vast-vpaid/2.0.2/videojs_5.vast.vpaid.min.js"></script>
+
+    <!-- Test Automation Stuff -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../prebid-library/prebid1.32.0.js" async></script>
+
+    <script>
+      var pbjs = pbjs || {};
+      pbjs.que = pbjs.que || [];
+      // adUnits can support video demand requests by setting 'mediaType' to 'video'.
+      var videoAdUnit = {
+        code: 'rish_prebid_VAST',
+        sizes: [[640,480]],
+        mediaType: 'video',   //required
+        bids: [
+          {
+            bidder: 'rubicon',
+            params: {
+              accountId: "7780",
+              siteId: "87184",
+              zoneId: "412394",
+              floor: 0.01,
+              url: "http://www.newyorktimes.com",
+              position: "atf",
+              video: {
+                'language': 'en',     //Required
+                'playerHeight': 480,  //Required
+                'playerWidth': 640,   //Required
+                'size_id': 201        //Required
+              }
+            }
+          }
+        ]
+      };
+      pbjs.que.push(function(){
+        pbjs.addAdUnits(videoAdUnit);
+        // pbjs.bidderSettings = {
+        //    rubicon: {
+        //        sendStandardTargeting: true,
+        //        adserverTargeting: [{
+        //           // hb_uuid is not present in versions of prebid < 1.3.1 and 0.34.3
+        //           key: "hb_uuid",
+        //           val: function (bidResponse) {
+        //             return bidResponse.impression_id;
+        //           }
+        //       }]
+        //   }
+        // };
+
+        /* ======== MasterTagUrl Created by prebid: ======== */
+        // https://pubads.g.doubleclick.net/gampad/ads?env=vp&gdfp_req=1&output=xml_vast3&unviewed_position_start=1&correlator=1517266985864&sz=640x480&url=http://localhost:4333/prebid-video&iu=/5300653/rish_prebid_VAST&cust_params=hb_bidder=rubicon&hb_adid=24a24f1f2e9644&hb_pb=1.80&hb_size=640x480&hb_impression_id=73a3e6da-fc4f-4b53-a62e-d0b8c25aff9c&hb_uuid=undefined&description_url=https://fastlane-adv.rubiconproject.com/v1/creative/73a3e6da-fc4f-4b53-a62e-d0b8c25aff9c.xml
+
+        pbjs.requestBids({
+          timeout : 3000,
+          bidsBackHandler : function(bids) {
+            console.log('bids back', bids);
+            var bidResponse = bids['rish_prebid_VAST']['bids'][0];
+            if (bidResponse.statusMessage === 'Bid available') {
+              var masterTagUrl = pbjs.adServers.dfp.buildVideoUrl({
+                adUnit: videoAdUnit,
+                params: {
+                  iu: '/5300653/rish_prebid_VAST'
+                }
+              });
+              console.log('mastertag', masterTagUrl);
+              //send masterTagUrl to the video player
+              invokeVideoPlayer(masterTagUrl);
+            }
+          }
+        });
+      });
+
+      function invokeVideoPlayer(masterTagUrl) {
+        // Initialize the plugin with the mastertag//
+        var myPlayer = videojs("example_video_1", {}, function () {
+          var player = this;
+          var vastAd = player.vastClient({
+            adTagUrl: masterTagUrl,
+            adCancelTimeout: 10000,
+            playAdAlways: true,
+            verbosity: 4,
+            vpaidFlashLoaderPath: "https://github.com/MailOnline/videojs-vast-vpaid/blob/RELEASE/bin/VPAIDFlash.swf?raw=true",
+            autoplay: true
+          });
+        });
+      }
+    </script>
+</head>
+<body>
+<video id="example_video_1"
+       class="video-js vjs-default-skin"
+       style="height: 480px; width: 640px"
+       height="480"
+       width="640"
+       controls preload="auto">
+    <source src="https://vjs.zencdn.net/v/oceans.mp4" type='video/mp4'/>
+    <source src="https://vjs.zencdn.net/v/oceans.webm" type='video/webm'/>
+    <source src="https://vjs.zencdn.net/v/oceans.ogv" type='video/ogg'/>
+</video>
+</body>
+</html>
