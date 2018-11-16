@@ -24,5 +24,6 @@ Spoofing Video Ads:
 2. To select CPM go to controllers/spoofCtrl and find video_spoof. In this object you will see CPM set on line 164. Change this to the desired CPM.
 
 3. The secure is on port 7070. Non secure is on port 4333.
+	Note that teh cert file is not actually going to work with chrome so you need to tell Chrome to proceed even if its not safe. Do this by going to the secure endpoint in the browser https://localhost:7070/video_spoof and letting chrome know its safe to proceed.
 
 4. If the spoof works you will see an ad with 3 doctors performing surgery.
