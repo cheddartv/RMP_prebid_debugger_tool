@@ -13,8 +13,12 @@
 3. Run "npm install"
 	This will install all node modules from the package.json file
 
-4. Create Self Signed Certificate
-	Follow step 4 of https://docs.google.com/document/d/1Ewa7qm2B0rN48OPo-2Lq4cyqT17WvFI2m8Edolvz4Hw/edit
-
 3. To run server:
 	nodemon server.js
+	
+Spoofing Video Ads:
+1. Install switcheroo to redirect urls (chrome extension)
+	a. Redirect fastlane-adv.rubiconproject.com/v1/auction/video to localhost:7070/video_spoof
+	b. Redirect fastlane-adv.rubiconproject.com/v1/creative/ to localhost:7070/creative/
+	
+2. To select CPM go to controllers/spoofCtrl and find video_spoof. In this object you will see CPM set. You can set this to whatever you want.
