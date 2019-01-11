@@ -1,3 +1,22 @@
+# Prebid Debug Tool
+
+This tool can be used to spoof rubicon bids for prebid, allowing easy forcing of prebid ads on RMP.
+
+## Steps for use:
+
+1. Run `npm install` and `npm install -g nodemon` to get prerequisites
+2. Install the browser plugin [Switcheroo Redirector](https://chrome.google.com/webstore/detail/switcheroo-redirector/cnmciclhnghalnpfhhleggldniplelbg) in chrome
+3. Run `nodemon`, this will startup server.js and listen for **http** on port `4333` and **https** on port `7070`
+4. Browse to the page you'd like to test, add `pbjs_debug=true` as a url parameter to get Prebid debugging messages in the console.
+5. Open **Switcheroo Redirect** from the chrome menu and add a redirect
+   * from `https://fastlane.rubiconproject.com/a/api/fastlane.json` to `http://localhost:4333/slowlane.json`
+   * from `http://fastlane.rubiconproject.com/a/api/fastlane.json` to `http://localhost:4333/slowlane.json`
+6. Refresh the page, you should now see 50 cpm Rubicon bids winning in all slots. They will print `Rubicon Ad Here` in their respective divs.
+
+---
+
+## Original README>md bt Ryan Schweitzer
+
 1. Install Node.js using homebrew
 	\n Install homebrew if you don’t already have it installed. Console Command:
 		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)”
